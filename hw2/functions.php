@@ -18,19 +18,15 @@ function task1($strArr, $isReturnCombinedString = false)
 function task2()
 {
 
-    $operation = '';
+    $data = func_get_args();
+    $operation = $data[0];
     $numsArr = [];
 
-    for ($i = 0; $i < func_num_args(); $i++) {
-        if ($i == 0) {
-            $operation = func_get_arg($i);
-        } else {
-            $numsArr[] = func_get_arg($i);
-        }
+    for ($i = 1; $i < sizeOf($data); $i++) {
+        $numsArr[] = $data[$i];
     }
 
-    $result = $numsArr[0];
-    $resultStr = $numsArr[0];
+    $result = $resultStr = $numsArr[0];
 
     for ($j = 1; $j < count($numsArr); $j++) {
         switch ($operation) {
@@ -41,13 +37,18 @@ function task2()
                 $result = $result - $numsArr[$j];
                 break;
             case '/':
-                $result = $result / $numsArr[$j];
+                if ($numsArr[$j] != 0) {
+                    $result = $result / $numsArr[$j];
+                }
                 break;
             case '*':
                 $result = $result * $numsArr[$j];
                 break;
         }
-        $resultStr .= ' '.$operation.' '.$numsArr[$j];
+
+        if (!($operation === '/' && $numsArr[$j] === 0)) {
+            $resultStr .= ' '.$operation.' '.$numsArr[$j];
+        }
     }
 
     $resultStr .= ' = '.$result;
@@ -57,8 +58,8 @@ function task2()
 
 function task3($height, $length)
 {
-    if (!is_int($height) || !is_int($length)) {
-        echo 'Параметры функции должны быть целыми числами';
+    if (!is_int($height) || !is_int($length) || $height <= 0 || $length <= 0) {
+        echo 'Параметры функции должны быть натуральными числами';
     }
 
     echo '<style>
@@ -100,10 +101,10 @@ function task4()
 function task5()
 {
     $str1 = 'Карл у Клары украл Кораллы';
-    echo preg_replace('/К/', '', $str1);
+    echo str_replace('К', '', $str1);
     echo '<br>';
     $str2 = 'Две бутылки лимонада';
-    echo preg_replace('/Две/', 'Три', $str2);
+    echo str_replace('Две', 'Три', $str2);
     echo '<br>';
 }
 
@@ -111,6 +112,7 @@ function task6_1()
 {
     $file = fopen('text.txt', "w");
     fwrite($file, 'Hello again!');
+    fclose($file);
 }
 
 function task6_2($fileName)
