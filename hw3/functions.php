@@ -151,7 +151,6 @@ function task3_2()
         }
         echo 'Сумма чётных чисел из файла taske.csv: '.array_reduce($res[0], "evenSum").BR;
     }
-
 }
 
 function task4()
