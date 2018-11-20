@@ -4,6 +4,7 @@ require_once('functions.php');
 const NOT_SET = 'не указан';
 
 try {
+
     $dsn = "mysql:host=127.0.0.1;dbname=burgers;charset=utf8";
     $pdo = new PDO($dsn, 'root');
     $email = $_REQUEST['email'];
@@ -16,6 +17,11 @@ try {
             'phone' => $_REQUEST['phone']
         ];
         $userId = createUser($data, $pdo);
+    }
+
+    if (empty($userId)) {
+        echo 'Не удалось определить пользователя';
+        return;
     }
 
     $street = !empty($_REQUEST['street']) ? $_REQUEST['street'] : NOT_SET.'а';
