@@ -4,9 +4,11 @@ require_once('functions.php');
 const NOT_SET = 'не указан';
 
 try {
+    $dbname = 'burgers';
+    $username = 'root';
 
-    $dsn = "mysql:host=127.0.0.1;dbname=burgers;charset=utf8";
-    $pdo = new PDO($dsn, 'root');
+    $dsn = "mysql:host=127.0.0.1;dbname=".$dbname.";charset=utf8";
+    $pdo = new PDO($dsn, $username);
     $email = $_REQUEST['email'];
     $userId = getUserIdByEmail($email, $pdo);
 
