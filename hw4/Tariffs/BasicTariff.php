@@ -3,13 +3,12 @@
 namespace hw4\Tariffs;
 use Exception;
 
-class BasicTariff extends AbstractTariff implements TariffInterface
+class BasicTariff extends AbstractTariff
 {
-
     protected $pricePerKm = 10;
     protected $pricePerMin = 3;
 
-    public function __construct($age = 0, $isAddGPS = false, $isAddDriver = false)
+    public function __construct($age, $isAddGPS = false, $isAddDriver = false)
     {
         if ($isAddDriver) {
             throw new Exception('Опция "Дополнительный водитель недоступна на тарифе "Базовый"');

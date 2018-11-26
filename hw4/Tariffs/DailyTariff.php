@@ -2,7 +2,7 @@
 
 namespace hw4\Tariffs;
 
-class DailyTariff extends AbstractTariff implements TariffInterface
+class DailyTariff extends AbstractTariff
 {
 
     protected $pricePerKm = 1;
@@ -15,5 +15,10 @@ class DailyTariff extends AbstractTariff implements TariffInterface
         }
 
         return ceil(($minutes - 30)/1440)*$this->pricePerDay + $this->pricePerKm*$kms;
+    }
+
+    public function getTariffPrice($minutes, $kms)
+    {
+        return $this->pricePerKm * $kms + $this->pricePerMin * $minutes;
     }
 }

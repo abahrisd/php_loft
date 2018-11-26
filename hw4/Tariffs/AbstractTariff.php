@@ -21,15 +21,15 @@ abstract class AbstractTariff implements TariffInterface
     protected const MIN_AGE = 16;
     protected const MAX_AGE = 65;
 
-    public function __construct($age = 0, $isAddGPS = false, $isAddDriver = false)
+    public function __construct(bool $age, $isAddGPS = false, $isAddDriver = false)
     {
         if ($age < self::MIN_AGE || $age > self::MAX_AGE) {
             throw new Exception('Не подходящий возраст');
         }
 
         $this->driversAge = $age;
-        $this->isAddGPS = $isAddGPS;
-        $this->isAddDriver = $isAddDriver;
+        $this->isAddGPS = !empty($isAddGPS);
+        $this->isAddDriver = !empty($isAddDriver);
     }
 
     /**
@@ -37,12 +37,12 @@ abstract class AbstractTariff implements TariffInterface
      * @param $minutes
      * @param $kms
      */
-    protected function entrysCheck($minutes, $kms)
+    /*protected function entrysCheck($minutes, $kms)
     {
         if ($minutes < 0 || $kms < 0) {
             throw new Exception('Время и расстояние должны быть положительными числам');
         }
-    }
+    }*/
 
     /**
      * Расчитывает стоимость дополнительных услуг
@@ -73,14 +73,16 @@ abstract class AbstractTariff implements TariffInterface
         return $this->driversAge < 21 ? 1.1 : 1;
     }
 
-    public function getTariffPrice($minutes, $kms)
-    {
-        return $this->pricePerKm*$kms + $this->pricePerMin*$minutes;
-    }
+    abstract public function getTariffPrice($minutes, $kms);
 
     public function getTotalPrice($minutes, $kms)
     {
-        $this->entrysCheck($minutes, $kms);
+        //$this->entrysCheck($minutes, $kms);
+
+        if ($minutes < 0 || $kms < 0) {
+            throw new Exception('Время и расстояние должны быть положительными числам');
+        }
+
         $addServicesPrice = $this->calculateAdditionalServices($minutes);
         return $this->getTariffPrice($minutes, $kms)*$this->getIncreaseFactor() + $addServicesPrice;
     }

@@ -2,7 +2,7 @@
 
 namespace hw4\Tariffs;
 
-class HourTariff extends AbstractTariff implements TariffInterface
+class HourTariff extends AbstractTariff
 {
 
     protected $pricePerKm = 0;
