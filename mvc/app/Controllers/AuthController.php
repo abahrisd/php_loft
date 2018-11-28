@@ -2,10 +2,14 @@
 
 namespace App\Controllers;
 
-class AuthController
+class AuthController extends BasicController
 {
-    public function render()
+    public function render($params)
     {
-        echo 'Форма авторизации!';
+        if ($this->router->getRoutes()[1] === 'registry') {
+            $this->view->render('registry', $params);
+        } else {
+            $this->view->render('login', $params);
+        }
     }
 }

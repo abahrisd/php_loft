@@ -4,17 +4,17 @@ namespace App\Core;
 
 class AuthService
 {
-    public function login($email)
+    public static function login($email)
     {
         $_SESSION['auth'] = $email;
     }
 
-    public function logout()
+    public static function logout()
     {
         $_SESSION['auth'] = null;
     }
 
-    public function isAuth()
+    public static function isAuth()
     {
         return !empty($_SESSION['auth']);
     }

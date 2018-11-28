@@ -3,13 +3,16 @@
 namespace App\Core;
 
 use App\Controllers\AuthController;
+use App\Models\MainModel;
 
 class MainController
 {
-    protected $routes;
+    protected $router;
+    protected $user;
+    protected $model;
     protected $controller;
-    protected $auth;
-    private const POSTFIX = "Controller";
+    protected $errorsArr = [];
+    protected $isWrongCredentials = false;
 
     private function getPostfix()
     {
@@ -18,53 +21,88 @@ class MainController
 
     public function __construct()
     {
-        $this->routes = explode('/', $_SERVER['REQUEST_URI']);
-        $this->auth = new AuthService(); // TODO проверка авторизации
-    }
+        try {
+            $this->router = new Router();
+            $this->model = new MainModel();
 
-    public function createController()
-    {
-        if (!isset($_COOKIE[self::AUTH_COOKIE])) {
-            // TODO показать форму авторизации
+            if ($_REQUEST['logout'] === 'true') {
+                AuthService::logout();
+            }
 
-            $controller = new AuthController();
-            $controller->render();
+            if (!AuthService::isAuth()) {
+                $email = $_REQUEST['email'];
+                $password = $_REQUEST['password'];
 
-//            setcookie(self::AUTH_COOKIE, true, time() + (86400 * 30), "/"); // 86400 = 1 day
-//            echo "Cookie named '" . self::AUTH_COOKIE . "' is not set!";
-            return null;
-        }
+                // регистрация
+                if ($this->router->getRoutes()[1] === 'registry' && $email && $password) {
+                    $response = $this->model->registerUser($email, $password);
 
-        if (empty($this->routes[1])) {
-            $className = 'Basic';
-        } else {
-            $className = ucfirst($this->routes[1]);
-        }
+                    if ($response['id']) {
+                        AuthService::login($email);
+                    } elseif ($response['error']) {
+                        $this->errorsArr[] = $response['error'];
+                    } else {
+                        $this->errorsArr[] = 'Ошибка при регистрации пользователя';
+                    }
+                }
 
-        $className .= self::POSTFIX;
+                // авторизация
+                if (!AuthService::isAuth() && $email && $password && count($this->errorsArr) === 0) {
+                    $user = $this->model->getUserByCredentials($email, $password);
 
-        $finalClassName = '\\App\\Controllers\\'.$className;
-        $this->controller = new $finalClassName;
-        $this->main();
-    }
+                    if ($user && password_verify($password, $user->password_hash)) {
+                        AuthService::login($email);
+                    } else {
+                        $this->isWrongCredentials = true;
+                    }
+                }
 
-    public function main()
-    {
-        if (!$this->controller) {
-            echo 'Не создан контроллер';
-            return;
-        }
+                // если всё ещё не авторизованы - показываем форму авторизации
+                if (!AuthService::isAuth()) {
+                    $controller = new AuthController($this->router);
+                    $controller->render([
+                        'isWrongCredentials' => $this->isWrongCredentials,
+                        'errors' => $this->errorsArr
+                    ]);
+                    return null;
+                }
+            }
 
-        if (empty($this->routes[2])) {
-            $method = 'index';
-        } else {
-            $method = strtolower($this->routes[2]);
-        }
+            if (empty($this->router->getRoutes()[1])) {
+                $className = 'Basic';
+            } else {
+                $className = ucfirst($this->router->getRoutes()[1]);
+            }
 
-        if (method_exists($this->controller, $method)) {
-            $this->controller->$method();
-        } else {
-            $this->controller->emptyMethod($method);
+            if (!in_array($className, ['User', 'File'])) {
+                $className = 'User';
+            }
+
+            $className .= self::getPostfix();
+
+            $finalClassName = '\\App\\Controllers\\' . $className;
+            $this->controller = new $finalClassName($this->router);
+
+            if (!$this->controller) {
+                echo 'Не создан контроллер';
+                return null;
+            }
+
+            if (empty($this->router->getRoutes()[2])) {
+                $method = 'render404';
+            } else {
+                $method = strtolower($this->router->getRoutes()[2]);
+            }
+
+            if (method_exists($this->controller, $method)) {
+                $this->controller->$method();
+            } else {
+                $this->controller->render404();
+            }
+        } catch (\PDOException $e) {
+            echo 'Ошибка при работе с базой: '.$e->getMessage();
+        } catch (\Exception $e) {
+            echo 'Ошибка: '.$e->getMessage();
         }
     }
 }

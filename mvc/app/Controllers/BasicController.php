@@ -2,10 +2,22 @@
 
 namespace App\Controllers;
 
+use App\Core\MainView;
+
 class BasicController
 {
-    public function emptyMethod($method)
+    protected $view;
+    protected $router;
+    protected $model;
+
+    public function __construct($router)
     {
-        echo 'Метод '.$method.' не определён';
+        $this->router = $router;
+        $this->view = new MainView();
+    }
+
+    public function render404()
+    {
+        $this->view->render('404');
     }
 }
