@@ -8,7 +8,7 @@ use App\Models\MainModel;
 class MainController
 {
     protected $router;
-    protected $user;
+    protected $userEmail;
     protected $model;
     protected $controller;
     protected $errorsArr = [];
@@ -29,15 +29,16 @@ class MainController
                 AuthService::logout();
             }
 
-            if (!AuthService::isAuth()) {
-                $email = $_REQUEST['email'];
-                $password = $_REQUEST['password'];
+            $email = $_REQUEST['email'];
+            $password = $_REQUEST['password'];
 
+            if (!AuthService::isAuth()) {
                 // регистрация
                 if ($this->router->getRoutes()[1] === 'registry' && $email && $password) {
                     $response = $this->model->registerUser($email, $password);
 
                     if ($response['id']) {
+                        $this->userEmail = $email;
                         AuthService::login($email);
                     } elseif ($response['error']) {
                         $this->errorsArr[] = $response['error'];
@@ -48,9 +49,10 @@ class MainController
 
                 // авторизация
                 if (!AuthService::isAuth() && $email && $password && count($this->errorsArr) === 0) {
-                    $user = $this->model->getUserByCredentials($email, $password);
+                    $user = $this->model->getUserByEmail($email, $password);
 
                     if ($user && password_verify($password, $user->password_hash)) {
+                        $this->userEmail = $email;
                         AuthService::login($email);
                     } else {
                         $this->isWrongCredentials = true;
@@ -59,13 +61,15 @@ class MainController
 
                 // если всё ещё не авторизованы - показываем форму авторизации
                 if (!AuthService::isAuth()) {
-                    $controller = new AuthController($this->router);
+                    $controller = new AuthController($this->router, null);
                     $controller->render([
                         'isWrongCredentials' => $this->isWrongCredentials,
                         'errors' => $this->errorsArr
                     ]);
                     return null;
                 }
+            } else {
+                $this->userEmail = $email;
             }
 
             if (empty($this->router->getRoutes()[1])) {
@@ -81,7 +85,7 @@ class MainController
             $className .= self::getPostfix();
 
             $finalClassName = '\\App\\Controllers\\' . $className;
-            $this->controller = new $finalClassName($this->router);
+            $this->controller = new $finalClassName($this->router, $this->userEmail);
 
             if (!$this->controller) {
                 echo 'Не создан контроллер';

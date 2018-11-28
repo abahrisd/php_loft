@@ -22,20 +22,19 @@ class MainModel
             'collation' => 'utf8_unicode_ci',
             'prefix'    => '',
         ]);
-// Make this Capsule instance available globally via static methods... (optional)
+        // Make this Capsule instance available globally via static methods... (optional)
         $this->capsule->setAsGlobal();
-// Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
+        // Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
         $this->capsule->bootEloquent();
     }
 
-    public function getUserByCredentials($email, $password)
+    public function getUserByEmail($email)
     {
         return $this->capsule->table('users')
             ->where([
                 ['user_email', '=', $email],
-//                ['password_hash', '=', password_hash($password, PASSWORD_DEFAULT)]
             ])
-            ->select(['user_id', 'user_name', 'password_hash'])
+            ->select(['user_id', 'user_name', 'password_hash', 'user_age', 'user_description', 'user_photo', 'user_email'])
             ->first();
     }
 
@@ -61,9 +60,6 @@ class MainModel
         if ($this->isEmailExist($email)) {
             return ['error' => 'Данный email уже существует в системе'];
         }
-
-//        var_dump('registerUser $email', $email);
-//        var_dump('registerUser $password', $password);
 
         $userId = $this->capsule->table('users')
             ->insertGetId([

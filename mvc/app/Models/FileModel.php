@@ -1,8 +1,8 @@
 <?php
 
-class FileModel
+namespace App\Models;
+
+class FileModel extends MainModel
 {
-    public function __construct()
-    {
-    }
+
 }
