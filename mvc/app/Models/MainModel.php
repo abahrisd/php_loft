@@ -17,24 +17,22 @@ class MainModel
             'host'      => '127.0.0.1',
             'database'  => Config::$dbname,
             'username'  => 'root',
-//            'password'  => '',
             'charset'   => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix'    => '',
         ]);
-        // Make this Capsule instance available globally via static methods... (optional)
         $this->capsule->setAsGlobal();
-        // Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
         $this->capsule->bootEloquent();
     }
 
     public function getUserByEmail($email)
     {
         return $this->capsule->table('users')
+            ->leftJoin('photos', 'users.photo_id', '=', 'photos.photo_id')
             ->where([
-                ['user_email', '=', $email],
+                ['users.user_email', '=', $email],
             ])
-            ->select(['user_id', 'user_name', 'password_hash', 'user_age', 'user_description', 'user_photo', 'user_email'])
+            ->select(['users.user_id', 'users.user_name', 'users.password_hash', 'users.user_age', 'users.user_description', 'photos.photo_path', 'users.user_email'])
             ->first();
     }
 
@@ -49,14 +47,13 @@ class MainModel
     }
 
     /**
-     * Проверяет наличие почты в системе и доавляет нового пользователя
+     * Проверяет наличие почты в системе и добавляет нового пользователя
      * @param $email
      * @param $password
      * @return array
      */
     public function registerUser($email, $password)
     {
-
         if ($this->isEmailExist($email)) {
             return ['error' => 'Данный email уже существует в системе'];
         }

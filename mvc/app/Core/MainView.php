@@ -8,6 +8,7 @@ class MainView
     {
         extract($data);
         require_once __DIR__."/../Views/".$filename.".php";
+        require_once __DIR__."/../Views/menu.php";
         require_once __DIR__."/../Views/errors.php";
     }
 }

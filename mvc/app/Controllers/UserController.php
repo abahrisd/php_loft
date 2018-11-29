@@ -2,7 +2,9 @@
 
 namespace App\Controllers;
 
+use App\Models\FileModel;
 use App\Models\UserModel;
+use App\Config;
 
 class UserController extends BasicController
 {
@@ -17,22 +19,67 @@ class UserController extends BasicController
         $this->view->render('images');
     }
 
+    public function list()
+    {
+        $sort = $_REQUEST['sort'] ?? 'asc';
+        $allUsers = $this->model->getAllUsers($sort);
+        $users = [];
+
+        // конвертим класс в массив
+        if ($allUsers) {
+            $users = json_decode(json_encode($allUsers), true);
+        }
+
+        $this->view->render('users-list', ['users' => $users]);
+    }
+
     public function edit()
     {
-        var_dump('user edit $_REQUEST', $_REQUEST);
-        // если в request есть данные - пишем их в базу
-        //
-        //достаём из базы данные пользователя по id
-        //показываем их на форме
+        if ($_REQUEST['user_id']) {
+            // сохраняем картинку на сервер
+            if (!empty($_FILES['user_photo']) && !empty($_FILES['user_photo']['tmp_name'])) {
+                if (!is_dir(Config::$imagesAbsPath)) {
+                    mkdir(Config::$imagesAbsPath);
+                }
 
-        $user = $this->model->getUserByEmail($this->userEmail);
-        $params = [];
+                $tmpName = $_FILES['user_photo']['tmp_name'];
+                $fileName = $_FILES['user_photo']['name'].'_'.time();
+                $fileSrc = Config::$imagesSrcPath.'\\'.$fileName;
+                $filePath = Config::$imagesAbsPath.'\\'.$fileName;
 
-        if ($user) {
-            $params = json_decode(json_encode($user), true);
+                move_uploaded_file($tmpName, $filePath);
+
+                // получаем пользователя что бы узнать его user_id
+                $fileModel = new FileModel();
+                $user = $this->model->getUserByEmail($this->userEmail);
+                $photo_id = $fileModel->addPhoto($fileSrc, $user->user_id);
+            }
+
+            // если есть данные из формы - обновляем пользователя
+            $params = [
+                'user_id' => $_REQUEST['user_id'],
+                'user_name' => $_REQUEST['user_name'],
+                'user_age' => $_REQUEST['user_age'],
+                'user_description' => $_REQUEST['user_description']
+            ];
+
+            if (!empty($photo_id)) {
+                $params['photo_id'] = $photo_id;
+            }
+
+            $this->model->updateUserById($params);
+
+            header("Location: ".$_SERVER['REDIRECT_URL'].'?salt='.time());
         }
 
         // получаем данные пользователя
+        $user = $this->model->getUserByEmail($this->userEmail);
+        $params = [];
+
+        // конвертим класс в массив
+        if ($user) {
+            $params = json_decode(json_encode($user), true);
+        }
 
         $this->view->render('user-edit', $params);
     }

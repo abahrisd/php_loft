@@ -13,6 +13,7 @@ class MainController
     protected $controller;
     protected $errorsArr = [];
     protected $isWrongCredentials = false;
+    protected $allowedControllers = ['User', 'File', 'Populate'];
 
     private function getPostfix()
     {
@@ -51,6 +52,8 @@ class MainController
                 if (!AuthService::isAuth() && $email && $password && count($this->errorsArr) === 0) {
                     $user = $this->model->getUserByEmail($email, $password);
 
+//                    var_dump('auth $user', $user);
+
                     if ($user && password_verify($password, $user->password_hash)) {
                         $this->userEmail = $email;
                         AuthService::login($email);
@@ -69,17 +72,13 @@ class MainController
                     return null;
                 }
             } else {
-                $this->userEmail = $email;
+                $this->userEmail = AuthService::getAuthEmail();
             }
 
-            if (empty($this->router->getRoutes()[1])) {
+            $className = ucfirst($this->router->getRoutes()[1]);
+
+            if (!in_array($className, $this->allowedControllers)) {
                 $className = 'Basic';
-            } else {
-                $className = ucfirst($this->router->getRoutes()[1]);
-            }
-
-            if (!in_array($className, ['User', 'File'])) {
-                $className = 'User';
             }
 
             $className .= self::getPostfix();
@@ -92,10 +91,10 @@ class MainController
                 return null;
             }
 
-            if (empty($this->router->getRoutes()[2])) {
-                $method = 'render404';
-            } else {
-                $method = strtolower($this->router->getRoutes()[2]);
+            $method = strtolower($this->router->getRoutes()[2]);
+
+            if (empty($method) || in_array($method, ['login', 'registry'])) {
+                $method = 'edit';
             }
 
             if (method_exists($this->controller, $method)) {

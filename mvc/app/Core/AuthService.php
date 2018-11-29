@@ -18,4 +18,9 @@ class AuthService
     {
         return !empty($_SESSION['auth']);
     }
+
+    public static function getAuthEmail()
+    {
+        return $_SESSION['auth'];
+    }
 }
