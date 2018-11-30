@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+</head>
+<body>
+<h2>Пользователи</h2>
+<table>
+    <tr>
+        <th>Email</th>
+        <th>Имя</th>
+        <th>Телефон</th>
+    </tr>
+
+    {% for user in usersData %}
+        <tr>
+            <td>{{user.user_email}}</td>
+            <td>{{user.user_name}}</td>
+            <td>{{user.user_phone}}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+<h2>Заказы</h2>
+<table>
+    <tr>
+        <th>Order_id</th>
+        <th>Адрес</th>
+        <th>Телефон</th>
+    </tr>
+
+    {% for order in ordersData %}
+        <tr>
+            <td>{{order.order_id}}</td>
+            <td>{{order.order_address}}</td>
+            <td>{{order.order_phone}}</td>
+        </tr>
+    {% endfor %}
+</table>
+</body>
+</html>
