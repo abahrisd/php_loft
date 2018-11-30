@@ -55,6 +55,7 @@ try {
     $orderId = placeOrder($orderDetails, $pdo);
     if ($orderId) {
         $messageData = [
+            'email' => $email,
             'orderId' => $orderId,
             'userId' => $userId,
             'address' => $address,

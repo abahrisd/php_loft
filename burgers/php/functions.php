@@ -1,5 +1,7 @@
 <?php
 
+require_once '../vendor/autoload.php';
+
 /**
  * Создаёт пользователя и возвращает его user_id
  * @param $data
@@ -99,11 +101,29 @@ function sendMessage($messageData, $pdo)
     $thxText = $count == 1 ? 'Спасибо - это ваш первый заказ.' : 'Спасибо! Это уже '.$count.' заказ';
 
     $message = '<h2>Заказ №'.$messageData['orderId'].'</h2><div>Ваш заказ будет доставлен по адресу '.$messageData['address'].'</div><div>Содержмое заказа - DarkBeefBurger за 500 рублей, 1 шт</div><div>'.$thxText.'</div>';
-    $fileName = 'order_'.date('d-m-YTH-i-s').'.html';
 
+    sendMail($message, $messageData['email']);
+
+    /*
+    $fileName = 'order_'.date('d-m-YTH-i-s').'.html';
     if (!is_dir('../messages')) {
         mkdir('../messages');
     }
+    file_put_contents('../messages/'.$fileName, $message);*/
+}
 
-    file_put_contents('../messages/'.$fileName, $message);
+function sendMail($text, $email)
+{
+    $transport = (new Swift_SmtpTransport('smtp.mail.ru', 465, 'ssl'))
+        ->setUsername('abakhrisd@mail.ru')
+        ->setPassword('p1l0truleZmail');
+
+    $mailer = new Swift_Mailer($transport);
+    $message = (new Swift_Message('Заказ бургера'))
+        ->setFrom(['abakhrisd@mail.ru' => 'Бургерная'])
+        ->setTo([$email])
+        ->setBody($text);
+
+    $result = $mailer->send($message);
+    print_r('$result', $result);
 }
