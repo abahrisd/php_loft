@@ -3,9 +3,9 @@
 @section('content')
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">Products</div>
+                    <div class="card-header">Товары</div>
 
                     <div style="display: {{ Request::get("success") ? 'flex' : 'none'}}; justify-content: center;margin: 20px;font-size: 20px;">
                         <div style="color: blue;">
@@ -13,37 +13,45 @@
                         </div>
                     </div>
 
+                    @if ($user->is_admin)
                     <div class="card-body">
                         <a href="{{route('products.create')}}" class="btn">
-                            Create
+                            Добавить
                         </a>
                     </div>
+                    @endif
 
                     <div class="card-body">
                         <table class="table">
                             <tr>
-                                <th>Product</th>
-                                <th>Product price</th>
-                                <th>User</th>
-                                <th>Actions</th>
+                                <th>Товар</th>
+                                <th>картинка</th>
+                                <th>Цена</th>
+                                <th>Пользователь</th>
+                                <th>Действия</th>
                             </tr>
 
                             @foreach($products as $product)
                                 <tr>
-                                    <th>{{$product->name}}</th>
-                                    <th>{{$product->price}}</th>
-                                    <th>{{isset($product->user) && $product->user->id}}</th>
-                                    <th>
-                                        <a href="{{route('products.edit', [$product->id])}}" class="btn">
-                                            Edit
+                                    <td>{{$product->name}}</td>
+                                    <td>
+                                        <img src="/storage/images/{{ $product->image }}" alt="Картинки нет :(">
+                                    </td>
+                                    <td>{{$product->price}}</td>
+                                    <td>{{isset($product->user) && $product->user->id}}</td>
+                                    <td>
+                                        <a href="{{route('products.view', [$product->id])}}" class="btn">
+                                            Просмотреть
                                         </a>
-                                        <a href="{{route('products.show', [$product->id])}}" class="btn">
-                                            View
+                                        @if ($user->is_admin)
+                                        <a href="{{route('products.edit', [$product->id])}}" class="btn">
+                                            Изменить
                                         </a>
                                         <a href="{{route('products.destroy', $product->id)}}" class="btn">
-                                            Delete
+                                            Удалить
                                         </a>
-                                    </th>
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
 

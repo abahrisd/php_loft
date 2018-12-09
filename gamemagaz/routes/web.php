@@ -31,11 +31,12 @@ Route::get('/categories/create', 'CategoriesController@create')
     ->middleware(['auth', 'admin'])->name('categories.create');
 Route::get('/categories/{category}', 'CategoriesController@view')->name('categories.view');
 
-Route::get('/orders', 'OrdersController@index')->name('orders.index');
-
 Route::group(['middleware' => ['auth', 'admin']], function () {
+    Route::get('/orders', 'OrdersController@index')->name('orders.index');
+
     Route::get('/products/{product}/destroy', 'ProductsController@destroy')->name('products.destroy');
     Route::get('/products/{product}/edit', 'ProductsController@edit')->name('products.edit');
+    Route::post('/products/store', 'ProductsController@store')->name('products.store');
     Route::put('/products/{product}', 'ProductsController@update')->name('products.update');
 
     Route::get('/categories/{category}/destroy', 'CategoriesController@destroy')->name('categories.destroy');
@@ -44,6 +45,6 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::get('/settings', 'SettingsController@index')->name('settings.index');
     Route::put('/settings/{setting}', 'SettingsController@update')->name('settings.update');
 
-    Route::resource('/products', 'ProductsController');
-    Route::resource('/categories', 'CategoriesController');
+//    Route::resource('/products', 'ProductsController');
+//    Route::resource('/categories', 'CategoriesController');
 });

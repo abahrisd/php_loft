@@ -22,6 +22,7 @@
                             <input placeholder="Название" type="text" name="name" value="{{$product->name}}" />
                             <input placeholder="Описание" type="text" name="description" value="{{$product->description}}" />
                             <input placeholder="Цена" type="text" name="price" value="{{$product->price}}" />
+                            <input placeholder="Картинка" type="file" name="image" />
                             <input type="submit">
                         </form>
                     </div>

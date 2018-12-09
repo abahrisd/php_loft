@@ -8,7 +8,9 @@ use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class ProductsController extends Controller
 {
@@ -32,6 +34,7 @@ class ProductsController extends Controller
         $this->validate($request, [
             'name' => 'required|min:3',
             'price' => 'required|numeric',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $name = $request->get('name');
@@ -39,7 +42,21 @@ class ProductsController extends Controller
         $description = $request->get('description');
         $user_id = Auth::user()->id;
 
-        Product::create(['name' => $name, 'description' => $description, 'price' => $price, 'user_id' => $user_id]);
+        $image = $request->file('image');
+        $imageName = null;
+
+        if (!empty($image)) {
+            $imageName = $user_id.'_image'.time().'.'.$image->getClientOriginalExtension();
+            $image->storeAs('images', $imageName);
+        }
+
+        Product::create([
+            'name' => $name,
+            'description' => $description,
+            'price' => $price,
+            'user_id' => $user_id,
+            'image' => $imageName,
+        ]);
 
         return $this->index();
     }
@@ -56,8 +73,7 @@ class ProductsController extends Controller
      * @param Product $product
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(Product $product)
-//    public function view(Product $product)
+    public function view(Product $product)
     {
         return view('products.view', [
             'product' => $product,
@@ -83,7 +99,21 @@ class ProductsController extends Controller
         $description = $request->get('description');
         $user_id = Auth::user()->id;
 
-        $product->update(['name' => $name, 'description' => $description, 'price' => $price, 'user_id' => $user_id]);
+        $image = $request->file('image');
+        $imageName = null;
+
+        if (!empty($image)) {
+            $imageName = $user_id.'_image'.time().'.'.$image->getClientOriginalExtension();
+            $image->storeAs('images', $imageName);
+        }
+
+        $product->update([
+            'name' => $name,
+            'description' => $description,
+            'price' => $price,
+            'user_id' => $user_id,
+            'image' => $imageName,
+        ]);
         return redirect(route('products.index'));
     }
 

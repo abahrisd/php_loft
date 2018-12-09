@@ -5,7 +5,7 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">Category view</div>
+                    <div class="card-header">Просмотр категории</div>
 
                     <div class="card-body">
                         <div>

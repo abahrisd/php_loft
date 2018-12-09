@@ -5,7 +5,7 @@
         <div class="row justify-content-center">
             <div class="col-md-10">
                 <div class="card">
-                    <div class="card-header">Settings</div>
+                    <div class="card-header">Настройки</div>
 
                     <div>
                         <ul>
@@ -17,11 +17,10 @@
 
                     <div class="card-body">
                         <div class="settings-container">
-                            <div class="settings-container__header">Last Update User Name</div>
-                            <div class="settings-container__header">Last Update User Email</div>
-                            <div class="settings-container__header">Name</div>
-                            <div class="settings-container__header">Value</div>
-                            <div class="settings-container__header">Submit</div>
+                            <div class="settings-container__header">Изменивший пользователь</div>
+                            <div class="settings-container__header">Название</div>
+                            <div class="settings-container__header">Значение</div>
+                            <div class="settings-container__header">Применить</div>
                         </div>
                         @foreach($settings as $setting)
                             <form action="{{route('settings.update', $setting->id)}}" method="post">
@@ -29,7 +28,6 @@
                                 @method('put')
                                 <div class="settings-container">
                                     <div class="settings-container__item">{{$setting->user->name}}</div>
-                                    <div class="settings-container__item">{{$setting->user->email}}</div>
                                     <div class="settings-container__item">{{$setting->name}}</div>
                                     <div class="settings-container__item"><input placeholder="Значение" type="text" name="value" value="{{$setting->value}}" /></div>
                                     <div class="settings-container__item"><input type="submit"></div>

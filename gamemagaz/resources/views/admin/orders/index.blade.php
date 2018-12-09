@@ -5,14 +5,14 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">Orders</div>
+                    <div class="card-header">Заказы</div>
 
                     <div class="card-body">
                         <table class="table">
                             <tr>
-                                <th>User email</th>
-                                <th>User Name</th>
-                                <th>Product Name</th>
+                                <th>email пользователя</th>
+                                <th>Имя пользователя</th>
+                                <th>Продукт</th>
                             </tr>
 
                             @foreach($orders as $order)

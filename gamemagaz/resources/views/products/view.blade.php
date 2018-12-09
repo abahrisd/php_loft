@@ -5,7 +5,7 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">Product view</div>
+                    <div class="card-header">Просмотр продукта</div>
 
                     <div class="card-body">
                         <div>
@@ -16,6 +16,9 @@
                         </div>
                         <div>
                             <span>Цена: {{$product->price}}</span>
+                        </div>
+                        <div>
+                            <img src="/storage/images/{{ $product->image }}" alt="Картинки нет :(">
                         </div>
 
                         <button id="buyButton">Купить</button>
