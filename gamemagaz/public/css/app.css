@@ -23,3 +23,14 @@
     border-radius: 20px;
     z-index: 1;
 }
+
+.settings-container {
+    display: flex;
+}
+.settings-container__header {
+    font-weight: bold;
+    width: 20%;
+}
+.settings-container__item {
+    width: 20%;
+}

@@ -7,6 +7,12 @@
                 <div class="card">
                     <div class="card-header">Products</div>
 
+                    <div style="display: {{ Request::get("success") ? 'flex' : 'none'}}; justify-content: center;margin: 20px;font-size: 20px;">
+                        <div style="color: blue;">
+                            Заказ размещен успешно
+                        </div>
+                    </div>
+
                     <div class="card-body">
                         <a href="{{route('products.create')}}" class="btn">
                             Create
@@ -31,7 +37,7 @@
                                         <a href="{{route('products.edit', [$product->id])}}" class="btn">
                                             Edit
                                         </a>
-                                        <a href="{{route('products.view', [$product->id])}}" class="btn">
+                                        <a href="{{route('products.show', [$product->id])}}" class="btn">
                                             View
                                         </a>
                                         <a href="{{route('products.destroy', $product->id)}}" class="btn">

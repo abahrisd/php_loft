@@ -26,7 +26,6 @@
         </div>
     </div>
 
-    {{-- отцентрировать попап --}}
     <div id="popup" class="vp4__buy-popup">
         <div class="container">
             <div class="row justify-content-center">
@@ -44,8 +43,9 @@
                         </div>
 
                         <div class="card-body">
-                            <form action="{{route('products.buy', $product->id)}}" method="post">
+                            <form action="{{route('products.buy')}}" method="post">
                                 @csrf
+                                <input style="display: none" type="text" name="product_id" value="{{$product->id}}" />
                                 <input placeholder="Имя" type="text" name="name" />
                                 <input placeholder="Email" type="email" name="email" value="{{$email}}" />
                                 <input type="submit">
